@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>User Registration</title>
+    <!--bootstrap css-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+    <!--external css-->
+    
+    <!-- jquery   -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- bootstrap js   -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    
+    
+</head>
+<body>    
+    <h2>Register</h2>    
+    <section class="container">
+        <section class="row justify-content-center">
+            <section class="col-12 col-sm-6 col-md-3">                
+                {% from 'includes/_formhelpers.html' import render_field %}
+                <form method="post" action="/register/" class="form-container">
+                    <dl>
+                        {{render_field(form.username)}}
+                                
+                        {{ render_field(form.password) }}                                 
+                   
+                        {{ render_field(form.role_id) }}
+                        </dl>
+                    <p></p>
+                    <input class="btn btn-success btn-block" type="submit" value="Register" />
+                    <p></p>
+
+                    <div>
+                        <p>
+                            <a href="{{url_for('login')}}">Already User? Please Log In </a>.
+                        </p>
+                        {% if error %}
+                        <p><strong>Error:</strong> {{ error }}
+                        {% endif %}
+                        
+                    </div>
+                </form>
+            </section>
+        </section>
+    </section>
+</body>
+
+</html>
