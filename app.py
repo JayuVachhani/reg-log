@@ -1,10 +1,12 @@
-import re
+
 from flask import Flask, render_template, request, redirect, url_for, flash,session
 from datetime import datetime
 from flaskext.mysql import MySQL
-from werkzeug.security import generate_password_hash, check_password_hash
-from wtforms import Form, StringField, PasswordField,SelectField
+# from werkzeug.security import generate_password_hash, check_password_hash
+from wtforms import  StringField, PasswordField,SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
+from flask_wtf import FlaskForm
+from passlib.hash import sha256_crypt
 
 
 # create instance of the Flask class
@@ -20,16 +22,17 @@ app.config['MYSQL_DATABASE_DB'] = 'casestudy'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
-class RegistrationForm(Form):    
+class RegistrationForm(FlaskForm):    
     username = StringField('Username', validators=[InputRequired(message="Username required"), Length(min=4, max=25, message="Username must be between 4 and 25 characters")])
     password = PasswordField('password', validators=[InputRequired(message="Password required"), Length(min=8, max=15, message="Password must be between 8 and 15 characters")])
-    role_id = SelectField("Role",choices=[('executive'),('cashier')])
+    role_id = SelectField("Role",choices=[('executive','Executive'),('cashier','Cashier')],default='select role')
 
 
 @app.route("/")
 def reg():
     # passing reference of date variable
-    return render_template("register.html")
+    form = RegistrationForm()
+    return render_template("register.html",form=form)
 
 
 # register page
@@ -40,7 +43,7 @@ def register():
     # check if request is post or not
         form = RegistrationForm(request.form)
         if request.method == "POST" and form.validate():
-               
+            # return "form submitted"
         # store the user-data in variables coming from form
             username = form.username.data        
             password = form.password.data
@@ -63,16 +66,11 @@ def register():
             if account:
 
                 error = 'Account already exists!'
-                return render_template('register.html',error = error,form=form)
-
-            # regular expression        
-            elif not re.match(r'[A-Za-z]+', username):
-                error = 'Username must contain only characters!'
-                return render_template('register.html',error = error,form=form)
-
+                return render_template('register.html',error = error,form=form)               
+           
             else:
             # create hashed password
-                password = generate_password_hash(password)
+                password = sha256_crypt.hash(password)
                 print('username {0}'.format(username))
                 # Account doesnt exists and the form data is valid, now insert new account into accounts table
                 cursor.execute('INSERT INTO users VALUES (null,%s, %s, %s)', (username,password,role))
@@ -105,11 +103,14 @@ def login():
             data = cursor.fetchone()
             # retrieve password from database
             password = data[2]
+            print('password is',password)
             # retrieve id
             id_num = data[0]
+            print('id is',id_num)
 
             # match both hased and user password
-            if check_password_hash(userpass, password):
+            if sha256_crypt.verify(userpass, password):
+                print('password is',password)
 
                 # if true session will be started
                 session['loggedin'] = True

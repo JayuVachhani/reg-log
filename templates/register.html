@@ -24,8 +24,9 @@
         <section class="row justify-content-center">
             <section class="col-12 col-sm-6 col-md-3">                
                 {% from 'includes/_formhelpers.html' import render_field %}
-                <form method="post" action="/register/" class="form-container">
+                <form method="post" action="{{url_for('register')}}" class="form-container">
                     <dl>
+                        {{form.csrf_token}}
                         {{render_field(form.username)}}
                                 
                         {{ render_field(form.password) }}                                 
