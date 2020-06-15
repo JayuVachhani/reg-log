@@ -40,12 +40,12 @@ def register():
     # check if request is post or not
         form = RegistrationForm(request.form)
         if request.method == "POST" and form.validate():
-            print('username {0} password {1} role {2}'.format(username,password,role_id))   
+               
         # store the user-data in variables coming from form
             username = form.username.data        
             password = form.password.data
-            role_id = form.role_id.data
-            print('username {0} password {1} role {2}'.format(username,password,role_id))      
+            role = form.role_id.data
+            print('username {0} password {1} role {2}'.format(username,password,role))      
 
             # create connection with the database
             conn = mysql.connect()
@@ -109,7 +109,7 @@ def login():
             id_num = data[0]
 
             # match both hased and user password
-            if sha256_crypt.verify(userpass, password):
+            if check_password_hash(userpass, password):
 
                 # if true session will be started
                 session['loggedin'] = True
